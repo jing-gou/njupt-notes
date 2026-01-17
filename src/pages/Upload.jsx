@@ -120,7 +120,7 @@ export default function Upload() {
             type="file" 
             className="absolute inset-0 opacity-0 cursor-pointer"
             onChange={(e) => setFile(e.target.files[0])}
-            accept=".pdf,.zip,.rar,.7z"
+            accept=".pdf,.zip,.rar,.7z,.ppt,.pptx,.jpg,.png,.doc,.docx"
           />
           <FileUp className={`mx-auto mb-3 ${file ? 'text-blue-500' : 'text-slate-300'}`} size={32} />
           {file ? (
@@ -130,7 +130,7 @@ export default function Upload() {
             </div>
           ) : (
             <div className="space-y-1">
-              <p className="text-slate-500 text-sm">点击或拖拽 PDF / ZIP 文件</p>
+              <p className="text-slate-500 text-sm">点击或拖拽 PDF/PNG/ZIP/DOC 文件</p>
               <p className="text-[10px] text-slate-400">最大支持 4.5MB</p>
             </div>
           )}
