@@ -2,35 +2,51 @@ import React, { useState } from 'react';
 import { GitPullRequest, FileUp, CheckCircle2, ShieldAlert } from 'lucide-react';
 
 export default function Upload() {
-  const [status, setStatus] = useState('idle'); // idle | processing | success
+  const [status, setStatus] = useState('idle'); // idle | processing | success | error
   const [file, setFile] = useState(null);
+  
+  // --- 关键修改 1：添加状态管理 ---
+  const [courseName, setCourseName] = useState('');
+  const [category, setCategory] = useState('历年真题');
+
   const handleUpload = async (e) => {
-  e.preventDefault();
-  setStatus('processing');
+    e.preventDefault();
+    if (!file) return;
+    setStatus('processing');
 
-  // 1. 将文件转为 Base64 (GitHub API 要求)
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = async () => {
-    const base64Content = reader.result.split(',')[1];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Content = reader.result.split(',')[1];
 
-    // 2. 发送给后端 API
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fileName: file.name,
-        content: base64Content,
-        course: courseName, // 从你的表单 state 获取
-        category: category  // 从你的表单 state 获取
-      })
-    });
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: file.name,
+            content: base64Content,
+            course: courseName, // 现在这里有值了
+            category: category   // 现在这里有值了
+          })
+        });
 
-    if (response.ok) setStatus('success');
-    else setStatus('error');
+        if (response.ok) {
+          setStatus('success');
+        } else {
+          const errData = await response.json();
+          console.error("上传错误:", errData.error);
+          setStatus('error');
+          alert(`上传失败: ${errData.error}`);
+        }
+      } catch (err) {
+        console.error("请求失败:", err);
+        setStatus('error');
+      }
+    };
   };
-};
 
+  // 成功后的界面保持不变...
   if (status === 'success') {
     return (
       <div className="max-w-md mx-auto py-16 text-center animate-in fade-in zoom-in duration-500">
@@ -42,17 +58,6 @@ export default function Upload() {
           你的贡献已提交至 GitHub 审核队列。
           <br />管理员合并后，资料将自动同步。
         </p>
-        <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200 text-left">
-          <p className="text-xs font-mono text-slate-400 mb-2 uppercase tracking-widest">GitOps Pipeline</p>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-slate-600">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div> 自动创建分支成功
-            </div>
-            <div className="flex items-center gap-2 text-sm text-slate-600 font-bold">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div> 等待管理员 Review
-            </div>
-          </div>
-        </div>
         <button onClick={() => window.location.href = '/'} className="mt-8 text-blue-600 font-medium hover:underline text-sm">
           返回首页继续浏览
         </button>
@@ -89,18 +94,29 @@ export default function Upload() {
           )}
         </div>
 
-        {/* 2. 表单字段 */}
+        {/* 2. 表单字段 - 关键修改 2：绑定 value 和 onChange */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-500 uppercase">课程名称</label>
-            <input required type="text" placeholder="如：信号与系统" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none" />
+            <input 
+              required 
+              type="text" 
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              placeholder="如：信号与系统" 
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none" 
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-500 uppercase">资料分类</label>
-            <select className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none cursor-pointer">
-              <option>历年真题</option>
-              <option>复习笔记</option>
-              <option>实验报告</option>
+            <select 
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none cursor-pointer"
+            >
+              <option value="历年真题">历年真题</option>
+              <option value="复习笔记">复习笔记</option>
+              <option value="实验报告">实验报告</option>
             </select>
           </div>
         </div>
