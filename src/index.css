@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* 自定义主题变量 */
+@theme {
+  --color-brand-blue: #2563eb;
+  --color-academic-gray: #374151;
+  --font-serif: "Noto Serif SC", serif;
+}
+
+/* 基础样式微调 */
+@layer base {
+  body {
+    @apply bg-gray-50 text-slate-900 antialiased;
+  }
+}
+
+/* 组件样式 */
+@layer components {
+  .nav-link {
+    @apply text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors;
+  }
+  .btn-primary {
+    @apply bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-all active:scale-95;
+  }
+}

@@ -1,0 +1,32 @@
+name: Update Resource Index
+
+on:
+  push:
+    branches:
+      - master # 或者 main，取决于你的主分支名字
+    paths:
+      - 'public/uploads/**' # 只有当资料目录发生变化时才触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run index script
+        run: node scripts/generate-index.js
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: 自动更新资料索引 [skip ci]"
+          file_pattern: 'src/data/resources.json'
