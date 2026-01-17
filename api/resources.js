@@ -24,26 +24,31 @@ export default async function handler(req, res) {
     const resources = {};
     const UPLOAD_PATH = "public/uploads/";
 
-    // 3. 过滤并处理文件
     treeData.tree.forEach(item => {
-      // 只处理在 uploads 目录下且是文件 (blob) 的项目
-      if (item.path.startsWith(UPLOAD_PATH) && item.type === 'blob') {
+    if (item.path.startsWith(UPLOAD_PATH) && item.type === 'blob') {
+        // 1. 获取相对路径，例如: "计算机学院/数据结构/实验/报告.pdf"
         const relativePath = item.path.replace(UPLOAD_PATH, "");
         const pathParts = relativePath.split("/");
 
-        // 取第一级目录名作为课程分类，如果是根目录文件则归类到 "其他"
-        const course = pathParts.length > 1 ? pathParts[0] : "其他资料";
+        // 2. 确定分类（第一级文件夹）
+        const course = pathParts[0]; 
+
+        // 3. 确定显示名称
+        // 如果 pathParts 长度大于 1，说明在子文件夹里
+        // 我们把除了第一级之外的所有部分重新组合，保持层级感
+        const displayName = pathParts.length > 1 
+        ? pathParts.slice(1).join(" / ") 
+        : pathParts[0];
 
         if (!resources[course]) resources[course] = [];
 
         resources[course].push({
-          // 如果有多级目录，文件名显示完整路径，方便识别
-          name: pathParts.slice(1).join(" / ") || pathParts[0],
-          path: `https://raw.githubusercontent.com/${OWNER}/${REPO}/master/${item.path}`,
-          size: item.size ? (item.size / 1024).toFixed(1) + " KB" : "未知大小",
-          sha: item.sha // 唯一标识符
+        name: displayName, // 这里现在会显示 "数据结构 / 实验 / 报告.pdf"
+        path: `https://raw.githubusercontent.com/${OWNER}/${REPO}/master/${item.path}`,
+        size: item.size ? (item.size / 1024).toFixed(1) + " KB" : "未知",
+        sha: item.sha
         });
-      }
+    }
     });
 
     // 设置 Vercel 缓存，5分钟内不再请求 GitHub，加快访问速度
