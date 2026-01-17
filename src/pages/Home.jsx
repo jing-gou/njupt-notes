@@ -1,19 +1,52 @@
-import React, { useState } from 'react';
-// 直接引入自动生成的 JSON
-import resources from '../data/resources.json'; 
-import { Folder, FileText, Download, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Folder, FileText, Download, ChevronRight, Loader2 } from 'lucide-react';
 
 export default function Home() {
+  const [resources, setResources] = useState({});
+  const [loading, setLoading] = useState(true);
   const [openFolder, setOpenFolder] = useState(null);
 
-  // 如果没有数据时的展示
-  if (!resources || Object.keys(resources).length === 0) {
+  // 1. 获取 GitHub 文件列表的函数
+  const fetchResources = async () => {
+  try {
+    // 重点：这里改调你自己的后端接口，不需要 Token，不需要用户名
+    const res = await fetch("/api/resources"); 
+    const data = await res.json();
+    
+    if (res.ok) {
+      setResources(data);
+    } else {
+      throw new Error(data.error);
+    }
+  } catch (error) {
+    console.error("加载失败:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  // 加载状态
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+        <Loader2 className="animate-spin mb-2" size={32} />
+        <p>正在同步 GitHub 资料库...</p>
+      </div>
+    );
+  }
+
+  // 空状态
+  if (Object.keys(resources).length === 0) {
     return <div className="text-center py-20 text-gray-400">资料库暂空，期待你的贡献。</div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
-      <h2 className="text-2xl font-bold mb-6 text-slate-800">课程资料分类</h2>
+      <h2 className="text-2xl font-bold mb-6 text-slate-800">实时资料预览</h2>
       {Object.entries(resources).map(([course, files]) => (
         <div key={course} className="border border-slate-200 rounded-xl bg-white overflow-hidden shadow-sm">
           <button 
@@ -36,12 +69,13 @@ export default function Home() {
                     <FileText size={16} className="text-gray-400" />
                     <div>
                       <p className="text-sm font-medium">{file.name}</p>
-                      <p className="text-[10px] text-gray-400">{file.size} · {file.date}</p>
+                      <p className="text-[10px] text-gray-400">{file.size}</p>
                     </div>
                   </div>
                   <a 
                     href={file.path} 
-                    download 
+                    target="_blank" 
+                    rel="noreferrer"
                     className="p-2 text-blue-600 hover:bg-white rounded-full transition-all"
                   >
                     <Download size={18} />
