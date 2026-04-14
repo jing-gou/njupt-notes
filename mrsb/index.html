@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMOKE-FACTS | The Invisible Killer</title>
+    <style>
+        :root {
+            --bg: #000;
+            --text: #fff;
+            --accent: #ff3b30;
+            --card-bg: #1c1c1e;
+            --gray: #86868b;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* 1. Header: Death Counter */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a0505 0%, #000 70%);
+        }
+
+        .hero h2 {
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        #death-counter {
+            font-size: 15vw;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 10px 0;
+            text-shadow: 0 0 30px rgba(255, 59, 48, 0.3);
+        }
+
+        /* 2. Main Grid: Interaction Entrances */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .entry-card {
+            background: var(--card-bg);
+            padding: 50px 40px;
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 300px;
+        }
+
+        .entry-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .entry-card h3 {
+            font-size: 32px;
+            margin: 0 0 15px 0;
+        }
+
+        .entry-card p {
+            color: var(--gray);
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .entry-card .btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: var(--text);
+            color: var(--bg);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            width: fit-content;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .entry-card .btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px;
+            color: #333;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="position: absolute; top: 30px; left: 30px; z-index: 100; font-size: 14px; letter-spacing: 1px; color: rgba(255,255,255,0.5); font-weight: 300;">
+    PRODUCED BY <span style="font-weight: 700; color: #fff;">GROUP 4</span>
+</div>
+
+    <section class="hero">
+        <h2>Global Smoking Deaths This Year</h2>
+        <div id="death-counter">0</div>
+        <p style="color: #555;">Live estimation based on WHO 10M annual data</p>
+    </section>
+
+    <div class="container">
+        <div class="entry-card">
+            <div>
+                <div class="icon">🎭</div>
+                <h3>Social Modeling Simulator</h3>
+                <p>Face the pressure. Practice <b>Refusal Skills</b> in real-world social scenarios.</p>
+            </div>
+            <a class="btn" onclick="openRoleplay()">Start Roleplay</a>
+        </div>
+
+        <div class="entry-card">
+            <div>
+                <div class="icon">💸</div>
+                <h3>Cost Calculator</h3>
+                <p>Calculate the <b>financial & health toll</b>. Choose your brand and see the impact.</p>
+            </div>
+            <a class="btn" onclick="openCalc()">Calculate Now</a>
+        </div>
+
+        <div class="entry-card">
+            <div>
+                <div class="icon">📖</div>
+                <h3>Learning Hub</h3>
+                <p>Master 20 key vocabulary words and psychological facts from the article.</p>
+            </div>
+            <a class="btn" onclick="openHub()">Explore Hub</a>
+        </div>
+    </div>
+
+    <div id="hubOverlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:1000; overflow-y:auto; padding:50px 20px; box-sizing:border-box;">
+        <div style="max-width:600px; margin:0 auto; text-align:center;">
+            <button onclick="closeHub()"
+                style="background:none; border:none; color:#ff3b30; font-size:24px; cursor:pointer; float:right;">✕
+                Close</button>
+            <h2 style="font-size:32px; color:#fff; margin-bottom:10px;">Vocab Master</h2>
+            <div id="progress-info" style="color:#86868b; font-size:12px; margin-bottom:5px; text-transform:uppercase;">
+                Learning Progress</div>
+            <div style="width:100%; height:4px; background:#333; border-radius:2px; margin-bottom:30px;">
+                <div id="progress-fill"
+                    style="width:5%; height:100%; background:#ff3b30; border-radius:2px; transition:0.3s;"></div>
+            </div>
+            <div id="vocab-card-container"
+                style="background:#1c1c1e; padding:40px; border-radius:30px; border:1px solid #333; min-height:400px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <div id="v-word" style="font-size:36px; color:#ff3b30; font-weight:bold; margin-bottom:10px;">Loading...
+                </div>
+                <div id="v-type" style="color:#555; font-style:italic; margin-bottom:20px;">[adj.]</div>
+                <div id="v-detail" style="display:none; width:100%;">
+                    <div style="height:1px; background:#333; margin:20px 0;"></div>
+                    <div id="v-meaning" style="font-size:22px; color:#fff; margin-bottom:15px;">释义</div>
+                    <div id="v-sentence" style="font-size:16px; color:#86868b; line-height:1.5; font-style: italic;">
+                        "例句"</div>
+                </div>
+                <button id="show-hint-btn" onclick="revealDetail()"
+                    style="margin-top:40px; background:#fff; color:#000; border:none; padding:12px 30px; border-radius:20px; font-weight:bold; cursor:pointer;">Show
+                    Meaning</button>
+            </div>
+            <div style="margin-top:30px; display:flex; justify-content:space-between; gap:20px;">
+                <button onclick="prevCard()"
+                    style="flex:1; background:none; border:1px solid #333; color:#fff; padding:15px; border-radius:15px; cursor:pointer;">Previous</button>
+                <button onclick="nextCard()"
+                    style="flex:1; background:#333; border:none; color:#fff; padding:15px; border-radius:15px; cursor:pointer;">Next
+                    Card</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="calcOverlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:1001; overflow-y:auto; padding:50px 20px; box-sizing:border-box;">
+        <div style="max-width:600px; margin:0 auto;">
+            <button onclick="closeCalc()"
+                style="background:none; border:none; color:#ff3b30; font-size:24px; cursor:pointer; float:right;">✕
+                Close</button>
+            <h2 style="font-size:48px; color:#fff; margin-bottom:10px;">Cost Calculator</h2>
+            <p style="color:#86868b; margin-bottom:40px;">计算吸烟对你钱包和健康的双重打击。</p>
+            <div style="background:#1c1c1e; padding:30px; border-radius:20px; border:1px solid #333;">
+                <div style="margin-bottom:25px;">
+                    <label
+                        style="display:block; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase;">每天吸烟量
+                        (根):</label>
+                    <input type="number" id="dailyCount" value="20"
+                        style="width:100%; background:#000; border:1px solid #444; color:#fff; padding:15px; border-radius:12px; font-size:18px; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom:25px;">
+                    <label
+                        style="display:block; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase;">选择香烟品牌:</label>
+                    <select id="brandSelect"
+                        style="width:100%; background:#000; border:1px solid #444; color:#fff; padding:15px; border-radius:12px; font-size:18px; box-sizing:border-box;">
+                        <option value="25">中华 (硬) - ¥25/盒</option>
+                        <option value="45">中华 (软) - ¥45/盒</option>
+                        <option value="65">黄鹤楼 (1916) - ¥65/盒</option>
+                        <option value="14">利群 (新版) - ¥14/盒</option>
+                        <option value="22">玉溪 (软) - ¥22/盒</option>
+                        <option value="16">南京 (炫赫门) - ¥16/盒</option>
+                        <option value="26">芙蓉王 (硬) - ¥26/盒</option>
+                        <option value="10">红塔山 (软经典) - ¥10/盒</option>
+                        <option value="100">大重九 - ¥100/盒</option>
+                        <option value="23">黄山 (大红方印) - ¥23/盒</option>
+                    </select>
+                </div>
+                <button onclick="calculateToll()"
+                    style="width:100%; background:#ff3b30; color:#fff; border:none; padding:18px; border-radius:30px; font-weight:bold; cursor:pointer; font-size:18px;">开始计算开销</button>
+            </div>
+            <div id="calcResults" style="display:none; margin-top:40px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                    <div
+                        style="background:#1c1c1e; padding:25px; border-radius:15px; border:1px solid #333; text-align:center;">
+                        <small style="color:#86868b; text-transform:uppercase;">年度总花费</small>
+                        <h3 id="moneyResult" style="color:#fff; font-size:32px; margin:10px 0;">¥0</h3>
+                    </div>
+                    <div
+                        style="background:#1c1c1e; padding:25px; border-radius:15px; border:1px solid #333; text-align:center;">
+                        <small style="color:#86868b; text-transform:uppercase;">每年减寿 (天)</small>
+                        <h3 id="lifeResult" style="color:#ff3b30; font-size:32px; margin:10px 0;">0 Days</h3>
+                    </div>
+                </div>
+                <p id="funFact"
+                    style="color:#86868b; font-size:14px; margin-top:20px; line-height:1.4; text-align:center;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="roleplayOverlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:1002; overflow-y:auto; padding:50px 20px; box-sizing:border-box;">
+        <div style="max-width:600px; margin:0 auto; text-align:center;">
+            <button onclick="closeRoleplay()"
+                style="background:none; border:none; color:#ff3b30; font-size:24px; cursor:pointer; float:right;">✕
+                Close</button>
+            <h2 style="font-size:48px; color:#fff; margin-bottom:10px;">The Social Trap</h2>
+            <div id="scenario-container"
+                style="background:#1c1c1e; padding:40px; border-radius:28px; border:1px solid #333; min-height:350px; display:flex; flex-direction:column; justify-content:center;">
+                <div id="scenario-text" style="font-size:20px; line-height:1.6; color:#fff; margin-bottom:40px;">
+                    Loading...</div>
+                <div id="choice-buttons" style="display:grid; gap:15px;"></div>
+            </div>
+            <button onclick="resetRoleplay()"
+                style="margin-top:30px; background:none; border:1px solid #444; color:#888; padding:10px 20px; border-radius:20px; cursor:pointer;">Restart
+                Scenario</button>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 50px; color: #555; font-size: 13px; line-height: 1.6;">
+        &copy; 2026 Designed by **Group 4** | All Rights Reserved. <br>
+        Data provided in part by **WHO Public Records** & Health Analytics.
+    </footer>
+    <script>
+        // --- 1. Death Counter Logic (加速冲击版) ---
+        // --- 1. Death Counter Logic (视觉狂飙版) ---
+        const deathsPerYear = 30000000;
+        const deathsPerSecond = deathsPerYear / (365 * 24 * 60 * 60);
+
+        // 初始化：先算出今年到目前为止大概死了多少人
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const secondsSinceYearStart = (now - startOfYear) / 1000;
+        let floatingDeaths = secondsSinceYearStart * deathsPerSecond;
+
+        function updateCounter() {
+            // 每次刷新增加一小部分死亡数值（模拟平滑增长）
+            // 50ms 刷新一次，所以增加 (每秒死亡数 / 20)
+            floatingDeaths += (deathsPerSecond / 20);
+
+            // 渲染整数部分，加上千分位符
+            document.getElementById('death-counter').innerText = Math.floor(floatingDeaths).toLocaleString();
+        }
+
+        // 每 50 毫秒强制刷新一次视觉
+        setInterval(updateCounter, 50);
+        updateCounter();
+
+        // --- 2. Vocab Data & Learning Hub ---
+        const vocabData = [
+            { word: "Addictive", type: "adj.", meaning: "使人成瘾的", sentence: "Nicotine is as addictive as heroin, making it extremely hard to quit." },
+            { word: "Withdrawal Symptoms", type: "n. phr.", meaning: "戒断症状", sentence: "Painful withdrawal symptoms often lead smokers back to their habit." },
+            { word: "Lethal", type: "adj.", meaning: "致命的", sentence: "Smoking is the single most lethal habit in modern society." },
+            { word: "Pediatric Disease", type: "n.", meaning: "小儿科疾病", sentence: "Because most smokers start in their teens, it is now termed a pediatric disease." },
+            { word: "Carcinogen", type: "n.", meaning: "致癌物", sentence: "Tobacco smoke contains over 70 known carcinogens that damage DNA." },
+            { word: "Respiratory System", type: "n.", meaning: "呼吸系统", sentence: "Smoking causes long-term damage to the lungs and the entire respiratory system." },
+            { word: "Relapse", type: "v./n.", meaning: "复吸/旧病复发", sentence: "High relapse rates show that willpower alone is often not enough to quit." },
+            { word: "Social Modeling", type: "n.", meaning: "社会建模/模仿", sentence: "Social modeling by 'cool' celebrities influences many adolescents to try smoking." },
+            { word: "Refusal Skills", type: "n.", meaning: "拒绝技巧", sentence: "Learning refusal skills is essential to resist intense peer pressure." },
+            { word: "Psychological Dependence", type: "n.", meaning: "心理依赖", sentence: "The psychological dependence on smoking is often linked to stress relief." },
+            { word: "Social Rewards", type: "n.", meaning: "社交奖励", sentence: "Teens may smoke for social rewards, like feeling accepted by a group." },
+            { word: "Adolescence", type: "n.", meaning: "青春期", sentence: "Adolescence is a critical period where the brain is more vulnerable to addiction." },
+            { word: "Peer Influence", type: "n.", meaning: "同伴影响", sentence: "Strong peer influence can override a teenager's knowledge of health risks." },
+            { word: "Immediate Consequences", type: "n.", meaning: "即时后果", sentence: "Education should focus on immediate consequences like bad breath and stained teeth." },
+            { word: "Aversion Therapy", type: "n.", meaning: "厌恶疗法", sentence: "Aversion therapy pairs smoking with unpleasant stimuli to create a dislike for it." },
+            { word: "Stimulus", type: "n.", meaning: "刺激物", sentence: "In therapy, an unpleasant stimulus is used to break the positive association with smoking." },
+            { word: "Nicotine Replacement", type: "n.", meaning: "尼古丁替代疗法", sentence: "Nicotine replacement therapy (NRT) helps manage cravings during quitting." },
+            { word: "Prevention Program", type: "n.", meaning: "预防计划", sentence: "Effective prevention programs must tackle both social and physical factors." },
+            { word: "Counter-advertising", type: "n.", meaning: "反广告/公益广告", sentence: "Counter-advertising helps unmask the glamorous image created by tobacco companies." },
+            { word: "Intervention", type: "n.", meaning: "干预措施", sentence: "Early intervention is the key to preventing lifelong nicotine addiction." }
+        ];
+
+        let currentCardIndex = 0;
+
+        function openHub() {
+            document.getElementById('hubOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            updateCard();
+        }
+
+        function closeHub() {
+            document.getElementById('hubOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateCard() {
+            const card = vocabData[currentCardIndex];
+            document.getElementById('v-word').innerText = card.word;
+            document.getElementById('v-type').innerText = `[${card.type}]`;
+            document.getElementById('v-meaning').innerText = card.meaning;
+            document.getElementById('v-sentence').innerText = `"${card.sentence}"`;
+            document.getElementById('v-detail').style.display = 'none';
+            document.getElementById('show-hint-btn').style.display = 'block';
+            const progressPercent = ((currentCardIndex + 1) / vocabData.length) * 100;
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+        }
+
+        function revealDetail() {
+            document.getElementById('v-detail').style.display = 'block';
+            document.getElementById('show-hint-btn').style.display = 'none';
+        }
+
+        function nextCard() {
+            if (currentCardIndex < vocabData.length - 1) {
+                currentCardIndex++;
+                updateCard();
+            }
+        }
+
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCard();
+            }
+        }
+
+        // --- 3. Calculator Logic ---
+        function openCalc() {
+            document.getElementById('calcOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCalc() {
+            document.getElementById('calcOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function calculateToll() {
+            const daily = parseFloat(document.getElementById('dailyCount').value);
+            const price = parseFloat(document.getElementById('brandSelect').value);
+            if (isNaN(daily) || daily <= 0) {
+                alert("请输入有效的每天吸烟根数");
+                return;
+            }
+            const annualMoney = (daily / 20) * price * 365;
+            const lifeDays = ((daily * 11 * 365) / 1440).toFixed(1);
+            document.getElementById('calcResults').style.display = 'block';
+            document.getElementById('moneyResult').innerText = '¥' + Math.floor(annualMoney).toLocaleString();
+            document.getElementById('lifeResult').innerText = lifeDays + ' Days';
+            let fact = annualMoney > 6000 ? `足够买 ${(annualMoney / 6000).toFixed(1)} 部 iPhone 16。` : "足够买一张机票去旅行。";
+            document.getElementById('funFact').innerText = `*说明：${fact} 每支烟减寿11分钟。`;
+        }
+
+        // --- 4. Roleplay Logic ---
+        const scenarios = {
+            'start': {
+                text: "[SCENARIO: THE PARTY] A senior student hands you a cigarette. 'Don't be a baby,' he laughs. 'It makes you look more mature.'",
+                choices: [
+                    { text: "Take it to look mature.", next: 'fail_pediatric' },
+                    { text: "Say: 'No thanks, I'm training for sports.'", next: 'success_refusal' }
+                ]
+            },
+            'home_pressure': {
+                text: "[SCENARIO: AT HOME] Your sibling offers you one, saying it helps with exam stress.",
+                choices: [
+                    { text: "Try it to cope.", next: 'fail_psychological' },
+                    { text: "Say: 'I'll listen to music instead.'", next: 'success_home' }
+                ]
+            },
+            'fail_pediatric': {
+                text: "OUTCOME: You fell for 'Social Modeling'. 50% chance of dying from this habit.",
+                choices: [{ text: "Try another scenario", next: 'home_pressure' }]
+            },
+            'success_refusal': {
+                text: "SUCCESS! You used 'Refusal Skills'. You've avoided the trap.",
+                choices: [{ text: "Next: Home Environment", next: 'home_pressure' }]
+            },
+            'fail_psychological': {
+                text: "OUTCOME: Psychological Dependence started. Quitting will be hard.",
+                choices: [{ text: "Restart", next: 'start' }]
+            },
+            'success_home': {
+                text: "EXCELLENT! You chose your own path. Your risk is now zero.",
+                choices: [{ text: "Back to Start", next: 'start' }]
+            }
+        };
+
+        function openRoleplay() {
+            document.getElementById('roleplayOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            renderScenario('start');
+        }
+
+        function closeRoleplay() {
+            document.getElementById('roleplayOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function renderScenario(key) {
+            const node = scenarios[key];
+            document.getElementById('scenario-text').innerText = node.text;
+            const container = document.getElementById('choice-buttons');
+            container.innerHTML = '';
+            node.choices.forEach(c => {
+                const b = document.createElement('button');
+                b.innerText = c.text;
+                b.style.cssText = "background:#333; color:white; border:none; padding:15px; border-radius:15px; cursor:pointer; font-size:16px; transition:0.3s;";
+                b.onclick = () => renderScenario(c.next);
+                container.appendChild(b);
+            });
+        }
+
+        function resetRoleplay() { renderScenario('start'); }
+    </script>
+</body>
+
+</html>
